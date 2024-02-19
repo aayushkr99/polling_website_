@@ -1,0 +1,56 @@
+.polling-container {
+    background-color:#f8f9f5;
+    min-height: 90vh;
+    margin-top: 0px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    gap: 70px;
+  }
+  
+  .options-container {
+    width: 1000px;
+  }
+  
+  .option-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  /* .option-label {
+    cursor: pointer;
+    font-size: 16px;
+    flex: 1;
+    margin-right: 10px;
+  } */
+  
+  .option-details {
+    display: flex;
+    align-items: center;
+  }
+  
+  .vote-bar {
+    height: 20px;
+    border-radius: 5px;
+  }
+  
+  .vote-count,
+  .vote-percentage {
+    font-size: 16px;
+    margin-right: 10px;
+  }
+  
+  .vote-button {
+    width: 200px;
+    height: 40px;
+    font-size: 16px;
+    margin-left: 10px;
+    color : white;
+    background-color:  #282c34;
+  }
+  

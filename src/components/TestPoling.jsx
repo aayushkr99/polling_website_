@@ -1,9 +1,66 @@
 import React, { useState } from "react";
-import Button from "./Button";
 import axios from 'axios';
-import "./TestPoling.css"
+import "./TestPoling.css";
+
+
+const getCurrentCount = async (id) => {
+  const query = `
+  query MyQuery {
+    vote_count(where: {option_id: {_eq: ${id}}}) {
+      current_count
+      id
+      option_id
+    }
+  }
+  `
+  const graphqlEndpoint = "http://20.212.248.87:8080/v1/graphql";
+  const response = await axios.post(graphqlEndpoint, {
+    query: query,
+  });
+
+  return response.data.data.vote_count[0].current_count
+
+}
+
+
+
+const updateVoteCount = async (id) => {
+  const formattedId = `"${id}"`;
+  const graphqlQuery = `
+query MyQuery {
+activity_by_pk(id:  ${formattedId}) {
+  heading
+  options_activities {
+    name
+
+    vote_counts {
+      current_count
+    }
+  }
+}
+}
+  `
+  const graphqlEndpoint = "http://20.212.248.87:8080/v1/graphql";
+  const response = await axios.post(graphqlEndpoint, {
+    query: graphqlQuery,
+  });
+
+  if (response.data && response.data.data){
+    const propObject = {};
+    console.log(response.data.data)
+    for(let key of response.data.data.activity_by_pk.options_activities ){
+      propObject[key.name] = {...key, label : key.name, vote: key.vote_counts[0].current_count, heading : response.data.data.activity_by_pk.heading};
+    }
+    const initialVotes = {};
+    Object.keys(propObject).forEach((option) => {
+      initialVotes[option] = propObject[option].vote || 0;
+    });
+    return initialVotes;
+}
+}
+
 const TestPoling = (props) => {
-  const { optionsObject, heading, showOptions } = props;
+  const { optionsObject, showOptions } = props;
   console.log("options Object", optionsObject)
   const [votes, setVotes] = useState(() => {
         const initialVotes = {};
@@ -12,21 +69,37 @@ const TestPoling = (props) => {
         });
         return initialVotes;
       });
+      const activity = useState(optionsObject[Object.keys(optionsObject)[0]]["activity_id"]);
+
+  setTimeout(async () => {
+    console.log("activity",activity)
+    const val = await updateVoteCount(activity[0])
+    console.log("val from updateVoteCount ", val)
+    setVotes((prevVotes) => ({
+      ...prevVotes,
+      ...val
+    }));
+
+
+  }, 2000)
+
+
 
   const handleVote = async (option, id, option_id) => {
     console.log("options =-=-=", option, id, option_id);
-    const hasVoted = localStorage.getItem(id);
+    // const hasVoted = localStorage.getItem(id);
     
     
     // if (!hasVoted) {
   
-      console.log("=====" ,  votes[option] + 1);
+      console.log("=====" ,  votes[option] + 1, "votesssssssss", votes);
       const formattedId = `"${option_id}"`
-      const updatedCount=  `"${votes[option] + 1}"`
+      const updatedCount = await getCurrentCount(formattedId);
+      console.log("-=-=-=-=-=-updated count--===", updatedCount)
   
       const query = `
       mutation MyMutation {
-        update_vote_count(where: {option_id: {_eq: ${formattedId}}}, _set: {current_count:  ${updatedCount}}) {
+        update_vote_count(where: {option_id: {_eq: ${formattedId}}}, _set: {current_count:  ${updatedCount + 1}}) {
           returning {
             current_count
             id
@@ -48,9 +121,12 @@ const TestPoling = (props) => {
         [option]: count
       }));
       localStorage.setItem(id, true);
+      alert(`You have successfully voted for ${option}!`);
+      return
      
     // } else {
-    //   alert("You have already voted for this option.");
+    //   alert("You have already voted for this poll.");
+    //   return
     // }
   };
 
@@ -80,7 +156,7 @@ const TestPoling = (props) => {
               <span className="vote-count">{votes[option]}</span>
               <span className="vote-percentage">({calculatePercentage(votes[option])}%)</span>
             </div>
-            <button style={{backgroundColor : optionsObject[option].color,  width: "200px", height: "40px" ,fontSize: "16px" ,marginLeft: "10px",  color : "white"}} type="primary" onClick={() => handleVote(option, optionsObject[option].activity_id, optionsObject[option].id)}>Vote</button>
+            <button style={{backgroundColor : optionsObject[option].color,  width: "200px", height: "40px" ,fontSize: "16px" ,marginLeft: "10px",  color : "white"}} type="primary" onClick={() => handleVote(option, optionsObject[option].activity_id, optionsObject[option].id)}>{option}</button>
           </div>
         ))}
       </div>
@@ -90,45 +166,3 @@ const TestPoling = (props) => {
 };
 
 export default TestPoling;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// (
-//   <div style={{backgroundColor: "white", minHeight: "90vh", marginTop: "0px"}}>
-//     <h2>{heading}</h2>
-//     <h2>Vote Counts: {totalVotes} </h2>
-//     <div style={{ width: "1000px" }}>
-//       {Object.keys(optionsObject).map((option) => (
-//         <div key={option} style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-//           <p style={{ width: `${calculatePercentage(votes[option])}%`, cursor: "pointer", backgroundColor: optionsObject[option].color, height: '20px', maxWidth: '70%', margin: '5px', padding: '15px', borderRadius: '5px', color: 'white', textAlign: 'center', fontSize: '16px' }} onClick={() => handleVote(option, optionsObject[option].activity_id,  optionsObject[option].id  )}>{optionsObject[option].label}</p>
-//           <span style={{ fontSize: '16px', marginRight: '10px' }}>{votes[option]}</span>
-//           <span style={{ fontSize: '16px', marginRight: '10px' }}>({calculatePercentage(votes[option])}%)</span>
-//           <button style={{ width: '200px', height: '65px', cursor: "pointer", backgroundColor: optionsObject[option].color, color: 'white', border: 'none', borderRadius: '5px', padding: '10px', margin: '5px', fontSize: '16px' }} onClick={() => handleVote(option, optionsObject[option].activity_id,  optionsObject[option].id )}>Vote for {optionsObject[option].label}</button>
-//         </div>
-//       ))}
-//     </div>
-//     <Button onClick =  {handleClick}>back</Button>
-//   </div>
-// );

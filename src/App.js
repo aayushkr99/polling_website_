@@ -25,7 +25,7 @@ function App() {
       }
     }
 `;
-    const graphqlEndpoint = "http://localhost:8080/v1/graphql";
+    const graphqlEndpoint = "http://20.212.248.87:8080/v1/graphql";
     const response = await axios.post(graphqlEndpoint, {
       query: graphqlQuery,
     });

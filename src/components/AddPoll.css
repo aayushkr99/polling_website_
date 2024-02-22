@@ -1,0 +1,122 @@
+/* CSS (AddPoll.css) */
+
+.addpoll {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.heading{
+    display: flex;
+    justify-content: center;
+    color: #282c34;
+    margin: auto;
+    height: 70px;
+    font-size: 50px;
+    width: 70%;
+}
+.container {
+    display: flex;
+    justify-content: center;
+    min-height: auto;
+    height: auto;
+  }
+  
+  .form {
+    margin: 30px auto;
+    background-color: #282c34;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 70%;
+  }
+
+  .form button {
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #282c34;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .form button:hover {
+    background-color: #e0e0e0;
+    color: #282c34;
+  }
+  
+  .form label {
+    display: block;
+    margin-bottom: 8px;
+    color: white;
+  }
+  
+  .option-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  
+  .option-container input[type="text"] {
+    flex: 1;
+    padding: 10px;
+    font-size: 20px;
+    margin-right: 8px;
+    border: none;
+    border-radius: 4px;
+    background-color: #e0e0e0;
+    color: #282c34;
+    height: auto;
+  }
+  
+  .option-container select {
+    width: 150px;
+    padding: 8px;
+    border: none;
+    border-radius: 4px;
+    background-color: #e0e0e0;
+    color: #282c34;
+    /* margin-right: 8px;  */
+  }
+  
+  .option-container select:hover,
+  .option-container button:hover {
+    background-color: #e0e0e0;
+    color: #282c34;
+  }
+  
+  .option-container button {
+    padding: 8px;
+    border: none;
+    border-radius: 4px;
+    background-color: #282c34;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    height: 30px ;
+    /* margin-right: 8px; Added margin-right */
+  }
+  
+  .option-container button:hover {
+    background-color: white;
+    color: #282c34;
+  }
+  
+  /* Increase width and height of heading input */
+  #heading {
+    width: calc(100% - 16px); /* Adjust the width as needed */
+    height: 40px; /* Adjust the height as needed */
+    padding: 8px;
+    border: none;
+    border-radius: 4px;
+    background-color: #e0e0e0;
+    color: #282c34;
+    margin-bottom: 16px;
+    font-size: 28px;
+  }
+  
+  #heading:focus {
+    outline: none;
+  }
+  

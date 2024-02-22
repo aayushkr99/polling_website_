@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import axios from 'axios';
 import "./TestPoling.css";
+import callApi from "../utils/Api";
 
 
 const getCurrentCount = async (id) => {
@@ -13,13 +13,8 @@ const getCurrentCount = async (id) => {
     }
   }
   `
-  const graphqlEndpoint = "http://20.212.248.87:8080/v1/graphql";
-  const response = await axios.post(graphqlEndpoint, {
-    query: query,
-  });
-
+  const response  = await callApi(query);
   return response.data.data.vote_count[0].current_count
-
 }
 
 
@@ -40,10 +35,7 @@ activity_by_pk(id:  ${formattedId}) {
 }
 }
   `
-  const graphqlEndpoint = "http://20.212.248.87:8080/v1/graphql";
-  const response = await axios.post(graphqlEndpoint, {
-    query: graphqlQuery,
-  });
+  const response  = await callApi(graphqlQuery);
 
   if (response.data && response.data.data){
     const propObject = {};
@@ -61,7 +53,8 @@ activity_by_pk(id:  ${formattedId}) {
 
 const TestPoling = (props) => {
   const { optionsObject, showOptions } = props;
-  console.log("options Object", optionsObject)
+  console.log("options Object", optionsObject);
+
   const [votes, setVotes] = useState(() => {
         const initialVotes = {};
         Object.keys(optionsObject).forEach((option) => {
@@ -79,23 +72,18 @@ const TestPoling = (props) => {
       ...prevVotes,
       ...val
     }));
-
-
-  }, 2000)
+  }, 20000)
 
 
 
   const handleVote = async (option, id, option_id) => {
-    console.log("options =-=-=", option, id, option_id);
     // const hasVoted = localStorage.getItem(id);
     
     
     // if (!hasVoted) {
   
-      console.log("=====" ,  votes[option] + 1, "votesssssssss", votes);
       const formattedId = `"${option_id}"`
       const updatedCount = await getCurrentCount(formattedId);
-      console.log("-=-=-=-=-=-updated count--===", updatedCount)
   
       const query = `
       mutation MyMutation {
@@ -108,12 +96,7 @@ const TestPoling = (props) => {
         }
       }
       `
-      const graphqlEndpoint = "http://20.212.248.87:8080/v1/graphql";
-      const response = await axios.post(graphqlEndpoint, {
-        query: query,
-      });
-
-
+      const response = await callApi(query);
 
       const count = response.data.data.update_vote_count.returning[0].current_count
       setVotes((prevVotes) => ({
@@ -121,7 +104,7 @@ const TestPoling = (props) => {
         [option]: count
       }));
       localStorage.setItem(id, true);
-      alert(`You have successfully voted for ${option}!`);
+      // alert(`You have successfully voted for ${option}!`);
       return
      
     // } else {
@@ -142,7 +125,6 @@ const TestPoling = (props) => {
   };
   const header = optionsObject[Object.keys(optionsObject)[0]].heading
 
-  console.log("votes-=-=-=", votes)
   return (
     <div className="polling-container">
     <h2 style={{ marginTop: "10px", fontSize: "40px" , color: "#282c34"}}>{header}</h2>

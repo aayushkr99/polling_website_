@@ -1,5 +1,5 @@
 import axios from 'axios';
-const graphqlEndpoint = "http://20.212.248.87:8000/v1/graphql";
+const graphqlEndpoint = "http://20.212.248.87:8080/v1/graphql";
 const host = "http://20.212.248.87:5000/api/redis-data";
 const callApi = async(query) => {
     const response = await axios.post(graphqlEndpoint, {

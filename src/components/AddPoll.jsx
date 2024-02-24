@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import './AddPoll.css'; // Import the CSS file for styling
 import { FaTrash } from 'react-icons/fa'; // Import the trash icon from react-icons/fa
 import Button from './Button';
-import callApi from '../utils/Api';
+import {callApi, insertRedis} from '../utils/Api';
 const initialStates = {
   heading : "",
   options : [{ text: '', color: '' }]
@@ -51,7 +51,8 @@ const AddPoll = ({setShowPoll}) => {
     `
     const response = await callApi(addHeadingQuery);
     const activity_id = response.data.data.insert_activity_one.id
-
+    await insertRedis({heading,activity_id })   // redis insert 
+    
     for(let obj of options){
       const insertOptionsByActivityId = `
       mutation MyMutation {
@@ -63,7 +64,7 @@ const AddPoll = ({setShowPoll}) => {
       }
       `
       const response = await callApi(insertOptionsByActivityId);
-
+      
       const option_id = response.data.data.insert_options_activity_one.id
 
       const insertVoteCounts = `

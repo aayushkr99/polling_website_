@@ -1,12 +1,11 @@
 import "./App.css";
 import { useState, useEffect } from "react";
-import axios from "axios";
 // import Login from "./components/Login";
 import Button from "./components/Button";
 // import { FcGoogle } from "react-icons/fc";
 import Footer from "./components/Footer";
 import { useNavigate } from "react-router-dom";
-import callApi from "./utils/Api";
+import {callApi} from "./utils/Api";
 function App() {
   const history = useNavigate();
   const [data, setData] = useState([]);

@@ -1,14 +1,17 @@
 import React, {useEffect, useState} from 'react';
 import TestPoling from './TestPoling';
 import './List.css';
-import callApi from '../utils/Api';
+import {callApi, searchRedis} from '../utils/Api';
 import Button from './Button';
 import AddPoll from './AddPoll';
+import Search from './Search';
+
 const List = () => {
   const [data, setData] = useState([]);
   const [showOptions,  setShowOptions] = useState(false);
-  const [showPoll, setShowPoll] = useState(false)
+  const [showPoll, setShowPoll] = useState(false);
   const [state, setState] = useState({});
+  const [searchInput ,setSearchInput ] = useState("");
 
   const fetchData = async () => {
     const graphqlQuery = `
@@ -85,13 +88,43 @@ query MyQuery {
     setShowPoll(true)
   }
 
+  const handleSearchSubmit  = async (e) => {
+    e.preventDefault();
+    
+    // console.log(searchInput)
+    if(searchInput === ""){
+      fetchData();
+    }else{
+
+      const redisdata = await searchRedis(searchInput);
+      if(redisdata.status){
+      console.log(`data coming from redis -=-=-=-> ${redisdata.data}`, `data already present before search -=-=-=> ${data[0]}` );
+  
+        const val = redisdata.data.filter(x => typeof(x) == "string");
+        const final = val.map (x => {
+            const parts = x.split(':');
+       const uuid = parts[1];
+       return uuid
+        })
+    
+        console.log(final);
+        const filteredArr = data.filter(obj => final.includes(obj.id));
+        setData(filteredArr)
+      }
+    }
+  }
+
   return (
     <>
     {showPoll ? (<AddPoll setShowPoll={setShowPoll} />) : (
       <div style={{backgroundColor: "#282c34", minHeight: "100vh"}}>
       {!showOptions ? (
         <div className="list-container">
+        <div style={{display: 'flex', flexDirection: "row", justifyContent: "space-around" , "alignItems": "center"}}>
           <h2 style={{color: "white", fontSize: "60px", lineHeight: "60px"}}>List of Activities</h2>
+          <Search onChange={(e) =>setSearchInput(e.target.value) } onClick = {handleSearchSubmit} />
+          </div>
+
           <Button onClick={handlePoll}>Add poll</Button>
           {data.map((obj) => {
             return (

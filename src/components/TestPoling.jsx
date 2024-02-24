@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./TestPoling.css";
-import callApi from "../utils/Api";
+import {callApi} from "../utils/Api";
 
 
 const getCurrentCount = async (id) => {

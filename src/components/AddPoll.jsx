@@ -55,11 +55,11 @@ const AddPoll = ({setShowPoll}) => {
       await callApi(insertVoteCounts);
       setHeading(initialStates.heading);
       setOptions(initialStates.options);
-      setTimeout(() => {
-        alert('Your Poll has been added Successfully !!');
-        setShowPoll(false)
-       },1500);
     }
+    setTimeout(() => {
+      alert('Your Poll has been added Successfully !!');
+      setShowPoll(false)
+     },1500);
   };
 
   return (

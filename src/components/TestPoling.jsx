@@ -1,40 +1,17 @@
 import React, { useState } from "react";
 import "./TestPoling.css";
 import {callApi} from "../utils/Api";
-
+import { voteCountByOptionId , getAllVotesByActivtyId, updateVoteCountByOptionId} from "../utils/Query";
 
 const getCurrentCount = async (id) => {
-  const query = `
-  query MyQuery {
-    vote_count(where: {option_id: {_eq: ${id}}}) {
-      current_count
-      id
-      option_id
-    }
-  }
-  `
+  const query = voteCountByOptionId(id)
   const response  = await callApi(query);
   return response.data.data.vote_count[0].current_count
 }
 
-
-
 const updateVoteCount = async (id) => {
   const formattedId = `"${id}"`;
-  const graphqlQuery = `
-query MyQuery {
-activity_by_pk(id:  ${formattedId}) {
-  heading
-  options_activities {
-    name
-
-    vote_counts {
-      current_count
-    }
-  }
-}
-}
-  `
+  const graphqlQuery = getAllVotesByActivtyId(formattedId)
   const response  = await callApi(graphqlQuery);
 
   if (response.data && response.data.data){
@@ -72,30 +49,19 @@ const TestPoling = (props) => {
       ...prevVotes,
       ...val
     }));
-  }, 20000)
+  }, 2000)
 
 
 
   const handleVote = async (option, id, option_id) => {
-    // const hasVoted = localStorage.getItem(id);
+    const hasVoted = localStorage.getItem(id);
     
     
-    // if (!hasVoted) {
+    if (!hasVoted) {
   
       const formattedId = `"${option_id}"`
       const updatedCount = await getCurrentCount(formattedId);
-  
-      const query = `
-      mutation MyMutation {
-        update_vote_count(where: {option_id: {_eq: ${formattedId}}}, _set: {current_count:  ${updatedCount + 1}}) {
-          returning {
-            current_count
-            id
-            option_id
-          }
-        }
-      }
-      `
+      const query = updateVoteCountByOptionId(formattedId, updatedCount)
       const response = await callApi(query);
 
       const count = response.data.data.update_vote_count.returning[0].current_count
@@ -104,13 +70,13 @@ const TestPoling = (props) => {
         [option]: count
       }));
       localStorage.setItem(id, true);
-      // alert(`You have successfully voted for ${option}!`);
+      alert(`You have successfully voted for ${option}!`);
       return
      
-    // } else {
-    //   alert("You have already voted for this poll.");
-    //   return
-    // }
+    } else {
+      alert("You have already voted for this poll.");
+      return
+    }
   };
 
   const handleClick =async (option, id) => {
@@ -127,18 +93,18 @@ const TestPoling = (props) => {
 
   return (
     <div className="polling-container">
-    <h2 style={{ marginTop: "10px", fontSize: "40px" , color: "#282c34"}}>{header}</h2>
+    <h2 style={{ marginTop: "10px", fontSize: "40px" , color: "#282c34", fontFamily: "Arial, sans-serif"}}>{header}</h2>
       <h2 style={{ marginTop: "10px", fontSize: "30px" , color: "#282c34"}}>Total Votes: {totalVotes}</h2>
       <div className="options-container">
         {Object.keys(optionsObject).map((option) => (
-          <div key={option} className="option-item" onClick={() => handleVote(option, optionsObject[option].activity_id, optionsObject[option].id)}>
-            <p style={{width: `${calculatePercentage(votes[option])}%`, cursor: "pointer", backgroundColor: optionsObject[option].color, height: '20px', maxWidth: '70%', margin: '5px', padding: '15px', borderRadius: '5px',color: 'white', textAlign: 'center', fontSize: '16px'}}>{optionsObject[option].label}</p>
+          <div key={option} className="option-item" >
+            <p style={{width: `${calculatePercentage(votes[option])}%`, backgroundColor: optionsObject[option].color, height: '20px', maxWidth: '70%', margin: '5px', padding: '15px', borderRadius: '5px',color: 'white', textAlign: 'center', fontSize: '16px'}}>{optionsObject[option].label}</p>
             <div className="option-details">
               <div className="vote-bar" style={{ width: `${calculatePercentage(votes[option])}%`, backgroundColor: optionsObject[option].color }}></div>
               <span className="vote-count">{votes[option]}</span>
               <span className="vote-percentage">({calculatePercentage(votes[option])}%)</span>
             </div>
-            <button style={{backgroundColor : optionsObject[option].color,  width: "200px", height: "40px" ,fontSize: "16px" ,marginLeft: "10px",  color : "white"}} type="primary" onClick={() => handleVote(option, optionsObject[option].activity_id, optionsObject[option].id)}>{option}</button>
+            <button style={{backgroundColor : optionsObject[option].color, cursor: "pointer",  width: "200px", height: "40px" ,fontSize: "16px" ,marginLeft: "10px",  color : "white"}} type="primary" onClick={() => handleVote(option, optionsObject[option].activity_id, optionsObject[option].id)}>{option}</button>
           </div>
         ))}
       </div>

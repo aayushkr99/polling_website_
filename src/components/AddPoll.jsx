@@ -1,10 +1,10 @@
-// React Component (AddPoll.js)
-
 import React, { useState } from 'react';
-import './AddPoll.css'; // Import the CSS file for styling
-import { FaTrash } from 'react-icons/fa'; // Import the trash icon from react-icons/fa
+import './AddPoll.css'; 
+import { FaTrash } from 'react-icons/fa';
 import Button from './Button';
 import {callApi, insertRedis} from '../utils/Api';
+import { addActivity, insertOptionByActivityId ,insertVoteByOptionId } from '../utils/Query';
+
 const initialStates = {
   heading : "",
   options : [{ text: '', color: '' }]
@@ -37,51 +37,27 @@ const AddPoll = ({setShowPoll}) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    // Your submission logic here
     console.log("Heading:", heading);
     console.log("Options:", options);
 
-    const addHeadingQuery = `
-    mutation MyMutation {
-      insert_activity_one(object: {heading: "${heading}"}) {
-        heading
-        id
-      }
-    } 
-    `
+    const addHeadingQuery = addActivity(heading)
     const response = await callApi(addHeadingQuery);
     const activity_id = response.data.data.insert_activity_one.id
     await insertRedis({heading,activity_id })   // redis insert 
     
     for(let obj of options){
-      const insertOptionsByActivityId = `
-      mutation MyMutation {
-        insert_options_activity_one(object: {activity_id: "${activity_id}", name: "${obj.text}", color: "${obj.color}"}) {
-          color
-          id
-          name
-        }
-      }
-      `
+      const insertOptionsByActivityId = insertOptionByActivityId(activity_id, obj.text, obj.color)
       const response = await callApi(insertOptionsByActivityId);
       
       const option_id = response.data.data.insert_options_activity_one.id
 
-      const insertVoteCounts = `
-      mutation MyMutation {
-        insert_vote_count_one(object: {current_count: 0, option_id: "${option_id}"}) {
-          current_count
-          id
-          option_id
-        }
-      }
-      `
+      const insertVoteCounts = insertVoteByOptionId(option_id)
       await callApi(insertVoteCounts);
       setHeading(initialStates.heading);
       setOptions(initialStates.options);
       setTimeout(() => {
-        // alert('Your Poll has been added Successfully !!')
-        setShowPoll(false);
+        alert('Your Poll has been added Successfully !!');
+        setShowPoll(false)
        },1500);
     }
   };
@@ -89,7 +65,7 @@ const AddPoll = ({setShowPoll}) => {
   return (
     <>
     <div className='addpoll'>
-    <Button onClick={()=> setShowPoll(false)}>back</Button>
+    <Button onClick={()=> setShowPoll(false)} color='black'>back</Button>
     <h1 className='heading'>Create a Poll</h1>
     </div>
     <div className="container">
@@ -120,24 +96,22 @@ const AddPoll = ({setShowPoll}) => {
                 required
               >
                 <option value="">Select Color</option>
-                {/* <option value="#e0e0e0">White</option> */}
-                <option value="#8B0000">red</option>
+                <option value="#ff0000">red</option>
                 <option value="#282c34">dark</option>
-                <option value="#556B2F">green</option>
-                <option value="#191970">blue</option>
+                <option value="#008000">green</option>
+                <option value="#191970">dim blue</option>
                 <option value="#9932CC">orchid</option>
-                <option value="#800020">burgundy</option>
+                <option value="#0000ff">blue</option>
                 <option value="#36454F">charcoal</option>
-                <option value="#8FBC8F">seagreen</option>
-                {/* <option value="#2F4F4F">grey</option> */}
-                {/* Add more color options as needed */}
+                <option value="#000000">black</option>
+                <option value="#ffa500">orange</option>
               </select>
               <button type="button" onClick={() => handleDeleteOption(index)}>
-                <FaTrash /> {/* Render trash icon */}
+                <FaTrash />
               </button>
             </div>
           ))}
-          <button type="button" onClick={handleAddOption}>
+          <button type="button"  onClick={handleAddOption}>
             Add Option
           </button>
         </div>

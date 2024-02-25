@@ -2,12 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
-import List from "./components/List"
 import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
 import TestPoling from './components/TestPoling';
+import ManageListComponent from './components/ManageListComponent';
 
 
 
@@ -18,7 +18,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/list",
-    element : <List />
+    element : <ManageListComponent />
   },
   {
     path: "/list/poll",

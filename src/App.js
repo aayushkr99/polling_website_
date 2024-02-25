@@ -6,6 +6,7 @@ import Button from "./components/Button";
 import Footer from "./components/Footer";
 import { useNavigate } from "react-router-dom";
 import {callApi} from "./utils/Api";
+import { fetchPhotos } from "./utils/Query";
 function App() {
   const history = useNavigate();
   const [data, setData] = useState([]);
@@ -15,16 +16,7 @@ function App() {
   };
 
   const fetchData = async () => {
-    const graphqlQuery = `
-    query GetPhotos {
-      photos {
-        updated_at
-        id
-        photo_url
-        description
-      }
-    }
-`;
+    const graphqlQuery = fetchPhotos()
 
     const response = await callApi(graphqlQuery);
 
@@ -39,7 +31,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Welcome to Jeera Portal!</h1>
+        <h1 style={{fontFamily: "Arial, sans-serif"}}>Welcome to Jeera Polling Portal!</h1>
         {/* <Button> <FcGoogle size={50} style={{ marginRight: "10px" }} />
                 <span style={{ color: "white" }}>Login with Google</span></Button> */}
         <Button onClick={handleClick}>Try For Free</Button>
@@ -62,12 +54,8 @@ function App() {
                   justifyContent: "space-between",
                 }}
               >
-                <p>
-                  unde omnis iste natus error sit voluptatem accusantium
-                  doloremque laudantium, totam rem aperiam, eaque ipsa quae ab
-                  illo inventore veritatis et quasi architecto beatae vitae
-                  dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas
-                  sit aspernatur aut odit aut fugit, sed quia
+                <p style={{fontFamily:"Open Sans", fontSize:"20px"}}>
+                Explore a world of opinions and insights with ease. Engage in meaningful discussions and make your voice count. Join us as we strive to create a platform where every opinion matters. Let's shape the future together through informed choices. Start polling now and be part of something bigger!
                 </p>
                 <img src={obj.photo_url} alt="pic"></img>
               </div>
@@ -81,12 +69,8 @@ function App() {
                   justifyContent: "space-between",
                 }}
               >
-                <p>
-                  unde omnis iste natus error sit voluptatem accusantium
-                  doloremque laudantium, totam rem aperiam, eaque ipsa quae ab
-                  illo inventore veritatis et quasi architecto beatae vitae
-                  dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas
-                  sit aspernatur aut odit aut fugit, sed quia
+                <p style={{fontFamily:"Open Sans", fontSize:"20px"}}>
+                This website provides a platform for seamless collaboration, efficient communication, and streamlined project management. It enhances productivity, fosters teamwork, and facilitates the exchange of ideas, ultimately leading to successful outcomes.
                 </p>
                 <img src={obj.photo_url} alt="pic"></img>
               </div>

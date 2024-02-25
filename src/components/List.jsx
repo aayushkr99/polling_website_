@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from "react";
-import TestPoling from "./TestPoling";
 import "./List.css";
 import { callApi, searchRedis } from "../utils/Api";
 import Button from "./Button";
 import Search from "./Search";
 import { getAllActivity, getActivityById } from "../utils/Query";
-const List = ({setData, data,setShowPoll}) => {
-  const [showOptions, setShowOptions] = useState(false);
-  const [state, setState] = useState({});
+const List = ({setData, data,setShowPoll, setState, setShowOptions}) => {
   const [searchInput, setSearchInput] = useState("");
 
   const fetchData = async () => {
@@ -18,7 +15,7 @@ const List = ({setData, data,setShowPoll}) => {
   };
   useEffect(() => {
     fetchData()
-  })
+  },[searchInput])
 
   const handleClick = async (id) => {
     try {
@@ -82,7 +79,6 @@ const List = ({setData, data,setShowPoll}) => {
   return (
     <>
         <div style={{ backgroundColor: "#282c34", minHeight: "100vh" }}>
-          {!showOptions ? (
             <div className="list-container">
               <div
                 style={{
@@ -121,9 +117,6 @@ const List = ({setData, data,setShowPoll}) => {
                 );
               })}
             </div>
-          ) : (
-            <TestPoling optionsObject={state} showOptions={setShowOptions} />
-          )}
         </div>
     </>
   );

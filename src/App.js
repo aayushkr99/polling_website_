@@ -43,7 +43,7 @@ function App() {
 
       {data.map((obj, i) => {
         return (
-          <ul>
+          <ul key={i}>
             {i % 2 === 0 ? (
               <div
                 style={{
